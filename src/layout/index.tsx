@@ -12,7 +12,7 @@ const Layout: FC<IProps> = (props) => {
       <header>
         <Header />
       </header>
-      <main>
+      <main style={{ minHeight: 'calc(100vh - 20px)' }}>
         {props.children}
       </main>
       <footer>

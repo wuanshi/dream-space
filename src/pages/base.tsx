@@ -1,6 +1,95 @@
 import Head from "next/head";
+import classNames from "classnames";
 import Layout from "@/layout";
+import { CSSTransition, Transition } from "react-transition-group";
+import styles from "@/styles/base/index.module.scss";
+import { useEffect, useRef, useState } from "react";
+import React from "react";
+
+const Card = function Card({ i }: { isActive?: boolean; i: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  return (
+    <div
+      ref={ref}
+      className={classNames(styles.card)}
+      onMouseMove={() => {
+        let list = document.getElementsByClassName(styles.card);
+        Array.from(list).forEach((item, i) => {
+          if (item.classList.contains(styles.active)) {
+            item.classList.remove(styles.active);
+          }
+        });
+        ref.current?.classList.add(styles.active);
+      }}
+    >
+      <div>游戏云</div>
+    </div>
+  );
+};
+const defaultStyle = {
+  transition: `opacity 2000ms ease-in-out`,
+  opacity: 0,
+};
+
+const transitionStyles = {
+  entering: { opacity: 1 },
+  entered: { opacity: 1 },
+  exiting: { opacity: 0 },
+  exited: { opacity: 0 },
+};
+const Demo = () => {
+  const nodeRef = useRef<any>();
+  const [isShow, setIsShow] = useState(false);
+  useEffect(() => {
+    const observe = new IntersectionObserver((e) => {
+      console.log('e', e);
+      if(e[0].isIntersecting) {
+        setIsShow(true)
+      } else {
+        setIsShow(false)
+      }
+    })
+    observe.observe(nodeRef.current)
+    // nodeRef.current
+    return () => {
+      observe.disconnect()
+    }
+  }, []);
+  return (
+    <Transition nodeRef={nodeRef} in={isShow} timeout={2000}>
+      {(state) => (
+        <div
+          ref={nodeRef}
+          style={{
+            ...defaultStyle,
+            ...transitionStyles[state],
+          }}
+          className={styles.demo}
+        >
+          This is a Demo
+        </div>
+      )}
+    </Transition>
+  );
+};
+
 export default function Home() {
+  const [select, setSelect] = useState(0);
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      let list = document.getElementsByClassName(styles.card);
+      Array.from(list).forEach((item, i) => {
+        if (item.classList.contains(styles.active)) {
+          item.classList.remove(styles.active);
+        }
+        if (select == i) {
+          item.classList.add(styles.active);
+        }
+      });
+    });
+  }, [select]);
+
   return (
     <Layout>
       <Head>
@@ -10,8 +99,24 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div>
-        111
+        <div className={styles.wrapper}>
+          {new Array(4).fill(1).map((item, i) => {
+            return <Card key={i} isActive={i == select} i={i} />;
+          })}
+        </div>
+        <div>{count}</div>
+        <button
+          onClick={() => {
+            setCount(count + 1);
+          }}
+        >
+          {" "}
+          + 1
+        </button>
+        {[1, 2, 3, 4, 5].map((item, i) => {
+          return <Demo key={i} />;
+        })}
       </div>
     </Layout>
-  )
+  );
 }

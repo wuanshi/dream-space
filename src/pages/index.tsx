@@ -1,11 +1,21 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import unfetch from 'unfetch'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+import useSWR from 'swr'
 
 const inter = Inter({ subsets: ['latin'] })
 
+ 
+const fetcher = (url: string) => fetch(url).then(r => r.json())
+
 export default function Home() {
+  const { data, error, isLoading, isValidating, mutate } = useSWR('/api/hello', fetcher)
+  console.log(data, error, isLoading, isValidating, mutate);
+  
   return (
     <>
       <Head>
@@ -15,6 +25,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={`${styles.main} ${inter.className}`}>
+        <button onClick={() => {
+          toast.success('success login!')
+        }}>show toast</button>
         <div className={styles.description}>
           <p>
             Get started by editing&nbsp;
@@ -38,7 +51,7 @@ export default function Home() {
             </a>
           </div>
         </div>
-
+        <ToastContainer />
         <div className={styles.center}>
           <Image
             className={styles.logo}
