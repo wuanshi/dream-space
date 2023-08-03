@@ -1,6 +1,6 @@
 
 
-const request = function (url: string, params: object) {
+const request = function (baseUrl, url: string, params: object) {
   const options = {
     // credentials: 'include',
     // mode: 'cors',
@@ -10,12 +10,22 @@ const request = function (url: string, params: object) {
     method: 'POST',
     body: JSON.stringify(params)
   }
-  return fetch('http://127.0.0.1:3000/api' + url, options)
+  return fetch(baseUrl + url, options)
   .then(response => response.json())
   .catch(err => {
     console.log(err);
   })
-
 }
 
-export default request
+function post(url: string, params: object) {
+  return request('http://127.0.0.1:3000/api', url, params)
+}
+
+function cpost(url: string, params: object) {
+  return request('http://127.0.0.1:3000', url, params)
+}
+
+export {
+  post,
+  cpost
+}

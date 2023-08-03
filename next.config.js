@@ -15,4 +15,13 @@ module.exports = withBundleAnalyzer({
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
+  async rewrites() {
+    return [
+      //接口请求 前缀带上/api/
+      {
+        source: '/api/:path*',
+        destination: `${process.env.BASE_URL}/api/:path*`,
+      },
+    ]
+  },
 })
